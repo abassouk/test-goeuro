@@ -42,8 +42,8 @@ public class Position {
 	@XmlElement(name = "geo_position")
 	private GeoPosition geoPosition;
 
-	@XmlAttribute(name = "location_id")
-	private int locationId;
+	@XmlAttribute
+	private Integer locationId;
 
 	@XmlAttribute
 	private boolean inEurope;
@@ -122,11 +122,11 @@ public class Position {
 		this.geoPosition = geoPosition;
 	}
 
-	public int getLocationId() {
+	public Integer getLocationId() {
 		return locationId;
 	}
 
-	public void setLocationId(int locationId) {
+	public void setLocationId(Integer locationId) {
 		this.locationId = locationId;
 	}
 
