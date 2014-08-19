@@ -30,10 +30,9 @@ public class SuggestionRetriever extends ListResponseRetriever<Position> {
 	}
 
 	/**
-	 * Cerates a new suggestion retriever with default target search URL.
+	 * Creates a new suggestion retriever with default target search URL.
 	 */
 	public SuggestionRetriever() {
-		// as a precaution, let's have our own target url...
 		super(Position.class, target);
 	}
 }

@@ -50,7 +50,7 @@ public class ListResponseRetriever<T> {
 	private Class<T> klass;
 
 	/**
-	 * Contruct an instance for the specified class and target.
+	 * Construct an instance for the specified class and target.
 	 * 
 	 * @param klass
 	 *            the class of objects that the target URL corresponds to
@@ -123,7 +123,7 @@ public class ListResponseRetriever<T> {
 	 * @throws ErrorResponse
 	 *             if the server responded with an error
 	 * @throws IOException
-	 *             if a connection problem occured.
+	 *             if a connection problem occurred.
 	 */
 	public void search(String searchTerm, Handler<T> handler)
 			throws ErrorResponse, IOException {
