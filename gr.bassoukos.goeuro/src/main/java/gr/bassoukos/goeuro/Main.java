@@ -1,11 +1,12 @@
 package gr.bassoukos.goeuro;
 
+import gr.bassoukos.goeuro.ListResponseRetriever.Handler;
 import gr.bassoukos.goeuro.om.ErrorResponse;
 import gr.bassoukos.goeuro.om.GeoPosition;
 import gr.bassoukos.goeuro.om.Position;
 
+import java.io.Closeable;
 import java.io.IOException;
-import java.util.List;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -20,12 +21,61 @@ import org.apache.commons.csv.QuoteMode;
  * @author abas
  */
 public class Main {
+	/**
+	 * 
+	 * @author abas
+	 */
+	public static class PositionHandler implements Handler<Position>, Closeable {
+		private CSVPrinter csv;
+		private CSVFormat format;
+		private Appendable out;
+
+		public PositionHandler(CSVFormat csvFormat, Appendable out) {
+			this.format = csvFormat;
+			this.out = out;
+		}
+
+		// handle a retrieved position: print it into CSV.
+		public void handle(Position p) throws IOException {
+			ensureStarted();
+			// Q: Can it ever be null?
+			GeoPosition gp = p.getGeoPosition();
+			csv.printRecord(p.getTypeIdentifier(), p.getId(), p.getName(),
+					p.getType(), gp == null ? null : gp.getLatitude(),
+					gp == null ? null : gp.getLongitude());
+		}
+
+		/**
+		 * Ensure that the CSV printer has started; if the format specifies
+		 * headers, they will be printed when it starts.
+		 * 
+		 * @throws IOException
+		 */
+		public void ensureStarted() throws IOException {
+			// lazily initialize the printer
+			if (csv == null)
+				csv = format.print(out);
+		}
+
+		/**
+		 * Close the printer if it's been started.
+		 */
+		@Override
+		public void close() throws IOException {
+			if (csv != null) {
+				csv.close();
+				csv = null;
+			}
+		}
+	}
+
+	// The CSV format used to print.
 	private CSVFormat csvFormat = CSVFormat.EXCEL
 			.withQuoteMode(QuoteMode.NON_NUMERIC)
 			.withNullString(null)
 			.withHeader("_type", "_id", "name", "type", "latitude", "longitude");
 
-	private SuggestionRetriever retriever;
+	private ListResponseRetriever<Position> retriever;
 
 	public CSVFormat getCsvFormat() {
 		return csvFormat;
@@ -35,33 +85,12 @@ public class Main {
 		this.csvFormat = csvFormat;
 	}
 
-	public SuggestionRetriever getRetriever() {
+	public ListResponseRetriever<Position> getRetriever() {
 		return retriever;
 	}
 
-	public void setRetriever(SuggestionRetriever retriever) {
+	public void setRetriever(ListResponseRetriever<Position> retriever) {
 		this.retriever = retriever;
-	}
-
-	/**
-	 * Write CSV file for the give positions to the given appendable.
-	 * 
-	 * @param positions
-	 *            the list of positions that should be written.
-	 * @param out
-	 *            where the CSV should be written.
-	 * @throws IOException
-	 */
-	public void writeCSV(List<Position> positions, Appendable out)
-			throws IOException {
-		CSVPrinter csv = csvFormat.print(out);
-		for (Position p : positions) {
-			GeoPosition gp = p.getGeoPosition();
-			csv.printRecord(p.getTypeIdentifier(), p.getId(), p.getName(),
-					p.getType(), gp == null ? null : gp.getLatitude(),
-					gp == null ? null : gp.getLongitude());
-		}
-		csv.close();
 	}
 
 	/**
@@ -88,21 +117,24 @@ public class Main {
 	}
 
 	/**
-	 * Perform the whole request/output process. Check for exceptions, handle
-	 * them.
+	 * Connects to the server and for each response retrieved, print a new line
+	 * in the CSV
 	 * 
 	 * @param what
 	 *            the search term to use on the server.
 	 * @return 0 on success, 1 on failure.
-	 * @throws IOException
-	 *             if it can't write to System.out.
 	 */
 	public int processTerm(String what) {
+		// lazily initialize the actual retriever.
 		if (retriever == null)
 			retriever = new SuggestionRetriever();
-		try {
-			List<Position> result = retriever.search(what);
-			writeCSV(result, System.out);
+
+		try (PositionHandler handler = new PositionHandler(csvFormat,
+				System.out)) {
+			retriever.search(what, handler);
+			// ensure that if configured, a header gets printed even if the
+			// empty array has been received.
+			handler.ensureStarted();
 			return 0;
 		} catch (ErrorResponse e) {
 			showErrorResponse(e);
@@ -129,7 +161,7 @@ public class Main {
 	}
 
 	/**
-	 * Main method. Hndled this way to ensure that a) class is testable b) exit
+	 * Main method. Handled this way to ensure that a) class is testable b) exit
 	 * code is set at all times.
 	 * 
 	 * @param args
