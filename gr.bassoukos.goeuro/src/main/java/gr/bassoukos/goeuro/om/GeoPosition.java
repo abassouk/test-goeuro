@@ -1,7 +1,8 @@
 package gr.bassoukos.goeuro.om;
 
 import javax.annotation.Generated;
-import javax.xml.bind.annotation.XmlAttribute;
+
+import com.google.gson.annotations.Expose;
 
 /**
  * Holds the latitude and longitude of a position.
@@ -10,10 +11,10 @@ import javax.xml.bind.annotation.XmlAttribute;
  */
 @Generated("org.jsonschema2pojo")
 public class GeoPosition {
-	@XmlAttribute
+	@Expose
 	private double latitude;
 
-	@XmlAttribute
+	@Expose
 	private double longitude;
 
 	public double getLatitude() {

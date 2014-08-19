@@ -1,9 +1,9 @@
 package gr.bassoukos.goeuro.om;
 
 import javax.annotation.Generated;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Models a JSON object, as returned from the server; some ambiguity exists
@@ -11,51 +11,54 @@ import javax.xml.bind.annotation.XmlRootElement;
  * 
  * @author abas
  */
-@XmlRootElement
 @Generated("org.jsonschema2pojo")
 public class Position {
-	@XmlAttribute(name = "_type")
+	@Expose
+	@SerializedName("_type")
 	private String typeIdentifier;
 
-	@XmlAttribute(name = "_id")
+	@Expose
+	@SerializedName("_id")
 	private int id;
 
 	// TODO: determine actual type.
-	@XmlAttribute(name = "key")
+	@Expose
 	private String key;
 
-	@XmlAttribute
+	@Expose
 	private String name;
 
-	@XmlAttribute
+	@Expose
 	private String fullName;
 
-	@XmlAttribute(name = "iata_airport_code")
+	@SerializedName("iata_airport_code")
+	@Expose
 	private String iataAirportCode;
 
-	@XmlAttribute
+	@Expose
 	private String type;
 
-	@XmlAttribute
+	@Expose
 	private String country;
 
-	@XmlElement(name = "geo_position")
+	@Expose
+	@SerializedName("geo_position")
 	private GeoPosition geoPosition;
 
-	@XmlAttribute
+	@Expose
 	private Integer locationId;
 
-	@XmlAttribute
+	@Expose
 	private boolean inEurope;
 
-	@XmlAttribute
+	@Expose
 	private String countryCode;
 
-	@XmlAttribute
+	@Expose
 	private boolean coreCountry;
 
 	// TODO: determine actual type.
-	@XmlAttribute
+	@Expose
 	private String distance;
 
 	public int getId() {
@@ -169,5 +172,4 @@ public class Position {
 	public void setTypeIdentifier(String typeIdentifier) {
 		this.typeIdentifier = typeIdentifier;
 	}
-
 }

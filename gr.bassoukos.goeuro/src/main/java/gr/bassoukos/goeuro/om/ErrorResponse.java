@@ -1,10 +1,8 @@
 package gr.bassoukos.goeuro.om;
 
 import javax.annotation.Generated;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
+
+import com.google.gson.annotations.Expose;
 
 /**
  * Error response from the server. Directly mapped to a java.lang.Exception
@@ -12,17 +10,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * 
  * @author abas
  */
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.NONE)
 @Generated("org.jsonschema2pojo")
 public class ErrorResponse extends Exception {
 	private static final long serialVersionUID = 2372069603642182878L;
 
+	@Expose
 	private String message;
+	@Expose
 	private String errorClass;
+	@Expose
 	private String description;
 
-	@XmlAttribute
 	public String getMessage() {
 		return message;
 	}
@@ -31,7 +29,6 @@ public class ErrorResponse extends Exception {
 		this.message = message;
 	}
 
-	@XmlAttribute
 	public String getErrorClass() {
 		return errorClass;
 	}
@@ -40,7 +37,6 @@ public class ErrorResponse extends Exception {
 		this.errorClass = errorClass;
 	}
 
-	@XmlAttribute
 	public String getDescription() {
 		return description;
 	}
